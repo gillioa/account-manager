@@ -1,6 +1,5 @@
 package com.acmebank.accountmanager.controller
 
-import com.acmebank.accountmanager.model.Account
 import com.acmebank.accountmanager.model.Transaction
 import com.acmebank.accountmanager.repository.AccountRepository
 import com.acmebank.accountmanager.service.AccountService
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/account")
-class AccountController(private val accountRepository: AccountRepository) {
+class AccountController(accountRepository: AccountRepository) {
     private val accountService: AccountService = AccountService(accountRepository)
 
     @GetMapping("/balance/{account_number}")

@@ -6,7 +6,7 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
-class AccountService(private final val accountRepository: AccountRepository) {
+class AccountService(private val accountRepository: AccountRepository) {
     @Transactional
     fun getAccountById(accountId: String): Account? {
         val account = accountRepository.findById(accountId)
