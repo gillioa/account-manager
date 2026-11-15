@@ -10,6 +10,8 @@ A very simple banking REST API: check an account balance and transfer money betw
 ## Initial data
 Two accounts, `12345678` and `88888888`, each with a balance of 1,000,000 HKD.
 
+Balances and amounts are decimal values (`BigDecimal`) with 2 decimals, for example `1000000.00`. A transfer is rejected with `406 Not Acceptable` if the amount is zero or negative, has more than 2 decimals, or exceeds the sender's balance.
+
 ## Run
 ```bash
 ./mvnw spring-boot:run
@@ -34,10 +36,10 @@ curl -X POST localhost:8080/api/account/transaction \
   -H "Content-Type: application/json" \
   -d '{"sender": "12345678", "receiver": "88888888", "amount": 50000}'
 ```
-After the transfer, `88888888` has 1050000.0 and `12345678` has 950000.0.
+After the transfer, `88888888` has 1050000.00 and `12345678` has 950000.00.
 
 ## Database
-H2 file database stored at `~/account-data` (so balances survive restarts). The H2 console is enabled at `/h2_console` (user `sa`, empty password).
+H2 file database stored at `~/account-data` (so balances survive restarts). The balance column is `DECIMAL(19,2)`: if you ran an older version, delete `~/account-data*` once so the schema is recreated. The H2 console is enabled at `/h2_console` (user `sa`, empty password).
 
 ## Structure
 `controller/` (REST), `service/` (business logic), `repository/` (JPA), `model/` (`Account`, `Transaction`).

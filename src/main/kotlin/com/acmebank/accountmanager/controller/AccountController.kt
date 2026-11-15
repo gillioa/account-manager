@@ -7,6 +7,7 @@ import com.acmebank.accountmanager.service.AccountService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 
 @RestController
 @RequestMapping("/api/account")
@@ -14,12 +15,12 @@ class AccountController(accountRepository: AccountRepository) {
     private val accountService: AccountService = AccountService(accountRepository)
 
     @GetMapping("/balance/{account_number}")
-    fun fetchBalanceByAccountNumber(@PathVariable("account_number") number: String): ResponseEntity<Double> {
+    fun fetchBalanceByAccountNumber(@PathVariable("account_number") number: String): ResponseEntity<BigDecimal> {
         val account = accountService.getAccountById(number)
         if (account != null) {
-            return ResponseEntity<Double>(account.balance, HttpStatus.OK)
+            return ResponseEntity<BigDecimal>(account.balance, HttpStatus.OK)
         }
-        return ResponseEntity<Double>(HttpStatus.NOT_FOUND)
+        return ResponseEntity<BigDecimal>(HttpStatus.NOT_FOUND)
     }
 
     @PostMapping("/transaction")
@@ -29,7 +30,7 @@ class AccountController(accountRepository: AccountRepository) {
         if (sender == null || receiver == null) {
             return ResponseEntity<Transaction>(HttpStatus.NOT_FOUND)
         }
-        if (transactionContent.amount <= 0 || sender.balance < transactionContent.amount) {
+        if (!transactionContent.hasValidAmount() || sender.balance < transactionContent.amount) {
             return ResponseEntity<Transaction>(HttpStatus.NOT_ACCEPTABLE)
         }
         try {
