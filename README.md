@@ -1,27 +1,46 @@
-## Account-manager Project
+# account-manager
 
-The goal of this project is to be able to simulate a very simple banking system where users can check on their balance using their account number and transfer money between those accounts.
-The data must be persisted in an H2 database so it remains the same in case of a restart of the service.
+A very simple banking REST API: check an account balance and transfer money between accounts. Data is persisted in an H2 database.
 
-The intial data set is two accounts with number 12345678 and 88888888 with both a balance of 1,000,000 HKD for each of them
+## Stack
+- Kotlin, Spring Boot 3.2.5, Java 17
+- Spring Data JPA + H2
+- Maven (wrapper included)
 
-To make it run, simply open the project in IntelliJ and run the `AccountManagerApplication` file.
-To run the tests, simply open the project in IntelliJ and run the `AccountControllerTests` file.
+## Initial data
+Two accounts, `12345678` and `88888888`, each with a balance of 1,000,000 HKD.
 
-Please find below usage examples using `curl` :
-
+## Run
+```bash
+./mvnw spring-boot:run
 ```
+Or open the project in IntelliJ and run `AccountManagerApplication`.
+
+## Test
+```bash
+./mvnw test
+```
+(`AccountControllerTests`, `AccountManagerApplicationTests`)
+
+## API
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/account/balance/{account_number}` | Balance of an account |
+| POST | `/api/account/transaction` | Transfer between accounts |
+
+```bash
 curl -X GET localhost:8080/api/account/balance/88888888
-curl -X GET localhost:8080/api/account/balance/12345678
+curl -X POST localhost:8080/api/account/transaction \
+  -H "Content-Type: application/json" \
+  -d '{"sender": "12345678", "receiver": "88888888", "amount": 50000}'
 ```
+After the transfer, `88888888` has 1050000.0 and `12345678` has 950000.0.
 
-The response should be 1000000.0 for both requests.
+## Database
+H2 file database stored at `~/account-data` (so balances survive restarts). The H2 console is enabled at `/h2_console` (user `sa`, empty password).
 
-```
-curl -X POST localhost:8080/api/account/transaction -H "Content-Type: application/json" -d '{"sender": "12345678", "receiver": "88888888", "amount": 50000}'
-curl -X GET localhost:8080/api/account/balance/88888888
-curl -X GET localhost:8080/api/account/balance/12345678
-```
+## Structure
+`controller/` (REST), `service/` (business logic), `repository/` (JPA), `model/` (`Account`, `Transaction`).
 
-In the example above, we send an amount of 50,000 HKD from the account 12345678 to 88888888 and recheck the balance of both accounts.
-The response to the first `GET` should be now 1050000.0 and the response to the second `GET` should be now 950000.0.
+## Status
+Archived, no further development planned.
